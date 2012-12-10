@@ -243,6 +243,9 @@ class Config(object):
                 except KeyError:
                     cert = None
                 metad.import_external_metadata(spec["url"], cert)
+        if "inline" in metadata_conf:
+            for md_tuple in metadata_conf['inline']:
+                metad.import_metadata(md_tuple[1], md_tuple[0])
         return metad
 
     def endpoint(self, service, binding=None):
