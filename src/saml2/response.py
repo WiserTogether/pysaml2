@@ -370,6 +370,7 @@ class AuthnResponse(StatusResponse):
         #print "Conditions",assertion.conditions
         if self.test:
             lax = True
+
         assert self.assertion.conditions
         condition = self.assertion.conditions
         if self.debug and self.log:
@@ -512,8 +513,10 @@ class AuthnResponse(StatusResponse):
 #        elif self.context == "AttrQuery":
 #            self.authn_statement_ok(True)
 
-        if not self.condition_ok():
-            return None
+        # TODO: make condition skipping configurable
+        if self.assertion.conditions:
+            if not self.condition_ok():
+                return None
         
         if self.debug and self.log:
             self.log.info("--- Getting Identity ---")
