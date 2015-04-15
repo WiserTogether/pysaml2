@@ -128,8 +128,10 @@ class MissingKey(Exception):
 
 def xmlsec_version(execname):
     com_list = [execname,"--version"]
-    pof = Popen(com_list, stderr=PIPE, stdout=PIPE)
-    p_out, p_err = pof.communicate()
+    zombies = [Popen(com_list, stderr=PIPE, stdout=PIPE)]
+    p_out, p_err = zombies[0].communicate()
+    del zombies
+
     try:
         return p_out.split(" ")[1]
     except Exception:
@@ -364,13 +366,15 @@ def verify_signature(enctext, xmlsec_binary, cert_file=None, cert_type="pem",
         print "%s: %s" % (cert_file, os.access(cert_file, os.F_OK))
         print "%s: %s" % (fil, os.access(fil, os.F_OK))
 
-    pof = Popen(com_list, stderr=PIPE, stdout=PIPE)
+    zombies = [Popen(com_list, stderr=PIPE, stdout=PIPE)]
     try:
-        p_out, p_err = pof.communicate()
+        p_out, p_err = zombies[0].communicate()
+        del zombies
         if __DEBUG:
             print p_err
         verified = _parse_xmlsec_output(p_err)
     except XmlsecError, exc:
+        del zombies
         if log:
             log.error(60*"=")
             log.error(p_out)
@@ -513,8 +517,9 @@ class SecurityContext(object):
         if self.debug:
             self.log.debug("Encryption command: %s" % " ".join(com_list))
 
-        pof = Popen(com_list, stderr=PIPE, stdout=PIPE)
-        p_out, p_err = pof.communicate()
+        zombies = [Popen(com_list, stderr=PIPE, stdout=PIPE)]
+        p_out, p_err = zombies[0].communicate()
+        del zombies
 
         if self.debug:
             self.log.debug("Encryption result (out): %s" % (p_out,))
@@ -544,8 +549,9 @@ class SecurityContext(object):
         if self.debug:
             self.log.debug("Decrypt command: %s" % " ".join(com_list))
 
-        pof = Popen(com_list, stderr=PIPE, stdout=PIPE)
-        p_out, p_err = pof.communicate()
+        zombies = [Popen(com_list, stderr=PIPE, stdout=PIPE)]
+        p_out, p_err = zombies[0].communicate()
+        del zombies
         
         if self.debug:
             self.log.debug("Decrypt result (out): %s" % (p_out,))
@@ -817,8 +823,9 @@ class SecurityContext(object):
 
         com_list.append(fil)
 
-        pof = Popen(com_list, stderr=PIPE, stdout=PIPE)
-        p_out, p_err = pof.communicate()
+        zombies = [Popen(com_list, stderr=PIPE, stdout=PIPE)]
+        p_out, p_err = zombies[0].communicate()
+        del zombies
 
         # this doesn't work if --store-signatures are used
         if p_out == "":
