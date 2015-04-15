@@ -129,8 +129,9 @@ class MissingKey(Exception):
 def xmlsec_version(execname):
     com_list = [execname,"--version"]
     pof = Popen(com_list, stderr=PIPE, stdout=PIPE)
+    p_out, p_err = pof.communicate()
     try:
-        return pof.stdout.read().split(" ")[1]
+        return p_out.split(" ")[1]
     except Exception:
         return ""
     
@@ -513,8 +514,7 @@ class SecurityContext(object):
             self.log.debug("Encryption command: %s" % " ".join(com_list))
 
         pof = Popen(com_list, stderr=PIPE, stdout=PIPE)
-        p_out = pof.stdout.read()
-        p_err = pof.stderr.read()
+        p_out, p_err = pof.communicate()
 
         if self.debug:
             self.log.debug("Encryption result (out): %s" % (p_out,))
@@ -545,8 +545,7 @@ class SecurityContext(object):
             self.log.debug("Decrypt command: %s" % " ".join(com_list))
 
         pof = Popen(com_list, stderr=PIPE, stdout=PIPE)
-        p_out = pof.stdout.read()
-        p_err = pof.stderr.read()
+        p_out, p_err = pof.communicate()
         
         if self.debug:
             self.log.debug("Decrypt result (out): %s" % (p_out,))
@@ -819,8 +818,7 @@ class SecurityContext(object):
         com_list.append(fil)
 
         pof = Popen(com_list, stderr=PIPE, stdout=PIPE)
-        p_out = pof.stdout.read()
-        p_err = pof.stderr.read()
+        p_out, p_err = pof.communicate()
 
         # this doesn't work if --store-signatures are used
         if p_out == "":
